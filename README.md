@@ -28,17 +28,38 @@ You'll need to have these packages installed to use the project:
 To use the vizualisation tools you'll first need to create any quantum circuit with qiskit.
 Then you can display the state of your system after running your circuit using one of our tools with:
 ```
-beautiful_tools.approximation_display(qc)
+PSC_Quantum_visualisation.<vizualisation_tool>.display(qc)
 ```
-You will be able to ouput figures like these ones:
+
+## Description of the tools
+### The Dial Set
+
+The Dial Set vizualisation consists in serveral dials with bars. Each dial represents a state of the system, the size of the bar inside the dial is the amplitude of the state, its angle is its phase (0 if the bar is up, 90 if right...).
 
 ![2d_dialset](images/2d_dialset.png?raw=true "Title")
+
+### The bar chart
+
+The chart bar vizualisation consists in several bars. Each bar represents a state of the system, the size of the bar is its amplitude, and the color its phase.
+
 ![color_bar](images/color_bar.png?raw=true "Title")
+
+### The 3D Dial set
+
+The 3D Dial sets consits in the dials of the dial set vizualisation stacked. The |000...0> dial set is the one at the bottom of the figure, then you have the |0000...01> and it goes on. This vizualisation might help to find patterns linked to the entanglement of the system. Moreover it has intersting geometrical properties.
+
 ![3d_dialset](images/3d_dialset.png?raw=true "Title")
+
+### The entanglement vizualisation
+
+**Section that needs to be updated**
+Displays a figure that helps understanding if your system is entangled.
+
 ![entanglement](images/entanglement.png?raw=true "Title")
 
-Please note that all of these tools might not be implemented yet when you will be reading these lines.
+### The Vizualisation window
 
+This is a small GUI that contains the tools mentionned above.
 ## TODO
 
 * Add the doc to the repo
