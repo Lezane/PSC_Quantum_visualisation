@@ -1,6 +1,6 @@
 # Vizualisation tools for quantum computing
 
-This repo consists in the results of school project that aimed at creating new vizualisation tools for quantum computing. We worked under the supervision of Rodney Van Meter. We are quite new in the Qiskit community and it is first time we develop a tool. If you notice any bugs or other parts that we can improve, please contact us. (clement.lezane@polytechnique.edu or charles.gery@polytechnique.edu).
+This repo consists in the results of school project that aimed at creating new vizualisation tools for quantum computing. We worked under the supervision of Rodney Van Meter. We are quite new in the Qiskit community and it is first time we develop a tool. If you notice any bugs, things that can be improved, or if you need further explanation on how to use this package and what is the meaning of the outputs please contact us (clement.lezane@polytechnique.edu or charles.gery@polytechnique.edu). A documentation will be added to this package as soon as possible.
 
 ![pyqt_window_exemples](images/pyqt_window_exemples.png?raw=true "Title")
 
