@@ -31,6 +31,11 @@ Then you can display the state of your system after running your circuit using o
 PSC_Quantum_visualisation.<vizualisation_tool>.display(qc)
 ```
 
+When using the 3D Dial Set add these line of code with the import if you want to have an interactive figure:
+'''
+%matplotlib widget
+'''
+
 ## Description of the tools
 ### The Dial Set
 
