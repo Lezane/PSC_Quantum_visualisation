@@ -130,7 +130,57 @@ class DialSetMplCanvas(MyMplCanvas):
         
 
     def compute_initial_figure(self):
-        plt=dial_set_display(self.qc)
+        backend = BasicAer.get_backend('statevector_simulator')
+        job = execute(self.qc, backend)
+        state_superposition = job.result().get_statevector(self.qc)
+
+        #length of the string of bits
+        n=len(binary_repr(len(state_superposition)))-1
+
+        #creation of the subplots containing the dial sets
+        fig, ax = plt.subplots(2**((n//2)+(n%2)),2**(n//2))
+        fig.subplots_adjust(hspace=0.6, wspace=0.0)
+        plt.axis('off')
+
+        #creation of the dial set circle
+        theta = np.linspace(0, 2*np.pi, 40)
+        x = np.cos(theta)
+        y = np.sin(theta)
+
+        #counter to know what sublot we are working on
+        counter=0
+
+        #for each state we draw a dial set
+        for i in state_superposition:
+
+            #we first choose the coresponding subplot
+            plt.subplot(2**((n//2)+(n%2)),2**(n//2),counter+1)
+
+            title ="|"+binary_repr(counter,n)+">"
+
+            plt.plot(x, y)
+            plt.axis("equal")
+            plt.axis('off')
+            plt.title(title)
+
+
+            #we draw the dial set 
+            if i.imag==0 and i.real!=0:
+                a = np.array([0, 0])
+                b = np.array([0, i.real**2])
+                plt.plot(a, b)
+
+            elif i.imag!=0 and i.real==0:
+                a = np.array([0, 0])
+                b = np.array( [0, -(i.imag**2)])
+                plt.plot(a, b)
+
+            elif i.imag!=0: 
+                a = np.array([0, ((i.real**2)+(i.imag**2))*np.sin(phase(i))])
+                b = np.array([ 0, ((i.real**2)+(i.imag**2))*np.cos(phase(i))])
+                plt.plot(a, b)
+
+            counter+=1
        
 
     
@@ -141,7 +191,63 @@ class DialSet3DMplCanvas(MyMplCanvas):
         
 
     def compute_initial_figure(self):
-        plt=dial_set_3d_display(self.qc)
+        #we will store all the points in these lists
+        axeX,axeY,axeZ=[],[],[]
+
+        #we run a simulation of the quantum circuit and get the result
+        backend = BasicAer.get_backend('statevector_simulator')
+        job = execute(self.qc, backend)
+        state_superposition = job.result().get_statevector(self.qc)
+
+        #length of the string of bits
+        n=len(binary_repr(len(state_superposition)))-1
+
+        #counter to know what sublot we are working on
+        counter=0
+
+        #number of states we want in one color (the others will automaticly be in an another color)
+        nstate=0
+        #the colors we use 
+        listColors = ['red', 'blue']
+        #list that will contain the points selected to be in a different color
+        selected=[]
+
+        #number of points to represent each state
+        linePoints=1000
+
+        #for each state we draw a vector
+        for i in state_superposition:
+
+            norm=(i.real**2)+(i.imag**2)
+
+            for k in range(0,linePoints+1):
+                axeX.append(0.5+np.sin(phase(i))*norm*k/linePoints)
+                axeY.append(0.5+np.cos(phase(i))*norm*k/linePoints)
+
+                #we put a state at each integer on the z axis
+                #for no reason at all, it doesn't work when i only put "counter", i need to add the "k/(10000*Linepoints)" so the lines are not perfectly straight...
+                axeZ.append(counter) 
+
+                #if this is a state we want to have in a different color, we add it to the selected list
+                if counter < nstate:
+                    selected.append(counter*linePoints + k)
+
+                axeX.append(0.5)
+                axeY.append(0.5)
+                axeZ.append(counter) 
+            counter+=1
+    
+        #we draw the z axis
+        for k in range(linePoints):
+            axeX.append(0.5)
+            axeY.append(0.5)
+            axeZ.append(0)
+
+
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot(axeX, axeY, axeZ)
     
             
 class DialSetBarMplCanvas(MyMplCanvas):
@@ -152,8 +258,77 @@ class DialSetBarMplCanvas(MyMplCanvas):
         
 
     def compute_initial_figure(self):
-        plt=colorbar_display(self.qc)
+        backend = BasicAer.get_backend('statevector_simulator')
+        job = execute(self.qc, backend)
+        state_superposition = job.result().get_statevector(self.qc)
 
+        #length of the string of bits
+        n=len(binary_repr(len(state_superposition)))-1
+        
+        fig, ax = plt.subplots(1,2)
+        plt.subplot(1,2,1)
+
+        plt.rcParams['figure.figsize'] = [n*3, 5]
+
+        
+        ind = np.arange(1, len(state_superposition)+1)
+
+        x = []
+        statePhase = []
+        barX = 3*n*ind
+        titleList=[]
+
+        counter=0
+        cmap=plt.get_cmap("hsv")
+
+        for i in state_superposition:
+
+            title ="|"+binary_repr(counter,n)+">"
+            titleList.append(title)
+
+            x.append((i.real**2)+(i.imag**2))
+            statePhase.append(cmap(phase(i)/(2*np.pi)))
+
+
+            counter+=1
+
+
+        bars = plt.bar(barX, x, width = n, color = statePhase)
+
+        for i in range(len(state_superposition)):
+            bars[i].set_height(x[i])
+            if x[i]!=0:
+                plt.subplot(1,2,1).text(barX[i], 1.05*x[i], '%.3f' % float(x[i]), ha='center', va='bottom', fontsize=8)
+
+
+        plt.subplot(1,2,1).set_xticks(barX)
+        plt.subplot(1,2,1).set_ylim([0., min([1.2, max([1.2 * val for val in x])])])
+        plt.subplot(1,2,1).set_xticklabels(titleList, fontsize=12, rotation=70)
+
+
+
+        plt.subplot(1,2,1).set_xlabel('State')
+        plt.subplot(1,2,1).set_ylabel('Amplitude')
+
+        plt.subplot(1,2,1).set_title('Color Bar')
+        
+        #circle
+        plt.subplot(1,2,2)
+        
+        plt.rcParams['figure.figsize'] = [n*3, 5]
+        
+        theta = np.linspace(0, 2*np.pi, 300)
+        x = np.cos(theta)
+        y = np.sin(theta)
+        Scolor=theta/(2*np.pi)
+        plt.text(1, 0, 0, ha='center', fontsize=10)
+        plt.text(0, -1, 'pi/2', ha='center', fontsize=10)
+        plt.text(-1, 0, 'pi', ha='center', fontsize=10)
+        plt.text(0, 1, '3*pi/2', ha='center', fontsize=10)
+        plt.axis("equal")
+        plt.axis("off")
+
+        legend1 = plt.scatter(x, y, s=300, c = Scolor, cmap=plt.get_cmap("hsv"))
 
 # This class displays the application window.
 
