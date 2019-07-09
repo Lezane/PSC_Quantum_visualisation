@@ -3,7 +3,6 @@
 
 # In[2]:
 
-%matplotlib widget
 import getpass, time
 from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
 from qiskit import BasicAer, execute
