@@ -12,7 +12,7 @@ git clone https://github.com/Lezane/PSC-Quantum-visualisation
 ```
 Then you'll need to put the import at the beggining of your code:
 ```
-import beautiful_tools
+import PSC_Quantum_visualisation
 ```
 ### Prerequisites
 
